@@ -32,7 +32,7 @@
         X_zm = c,
         Y_zm = d
     };
-    Console.WriteLine(rational);
+    Console.WriteLine(rational.Reduce(a, b));
 }
 catch
 {
@@ -85,19 +85,68 @@ class Rational : Pair
 {
     public int X_zm { get; set; }
     public int Y_zm { get; set; }
-    public override (int, int) Add() => ((X * Y_zm + X_zm + Y), X_zm * Y_zm);
+    public override (int, int) Add()
+    {
+        Reduce(X, X_zm);
+        return ((X * Y_zm + X_zm + Y), X_zm * Y_zm);
+    }
 
-    public override (int, int) Divide() => (X * Y_zm, Y * X_zm);
+    public override (int, int) Divide()
+    {
+        Reduce(X, X_zm);
+        Reduce(Y, Y_zm);
+        return (X * Y_zm, Y * X_zm);
+    }
 
-    public override bool Equal() => X == Y && X_zm == Y_zm;
+    public override bool Equal()
+    {
+        Reduce(X, X_zm);
+        Reduce(Y, Y_zm);
+        return X == Y && X_zm == Y_zm;
+    }
 
-    public override (int, int) Multiply() => (X * Y, X_zm + Y_zm);
+    public override (int, int) Multiply()
+    {
+        Reduce(X, X_zm);
+        Reduce(Y, Y_zm);
+        return (X * Y, X_zm + Y_zm);
+    }
 
-    public override (int, int) Subtract() => ((X * Y_zm - X_zm + Y), X_zm * Y_zm);
+    public override (int, int) Subtract()
+    {
+        Reduce(X, X_zm);
+        Reduce(Y, Y_zm);
+        return ((X * Y_zm - X_zm + Y), X_zm * Y_zm);
+    }
 
-    public bool Greate() => ((double)X / X_zm) > ((double)Y / Y_zm);
+    public bool Greate()
+    {
+        Reduce(X, X_zm);
+        Reduce(Y, Y_zm);
+        return ((double)X / X_zm) > ((double)Y / Y_zm);
+    }
 
-    public bool Less() => ((double)X / X_zm) < ((double)Y / Y_zm);
+    public bool Less()
+    {
+        Reduce(X, X_zm);
+        Reduce(Y, Y_zm);
+        return ((double)X / X_zm) < ((double)Y / Y_zm);
+    }
+
+    public (int, int) Reduce(int a, int b)
+    {
+        int c = b;
+        while (a != 1 || b != 1)
+        {
+            if (a % c == 0)
+            {
+                a = a / c;
+                b = b / c;
+            }
+            c--;
+        }
+        return (a, b);
+    }
 
     public override string? ToString()
     {

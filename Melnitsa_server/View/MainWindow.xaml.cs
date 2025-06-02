@@ -21,6 +21,7 @@ namespace Melnitsa_server
         {
             InitializeComponent();
             DataContext = new MainViewModel();
+            
         }
     }
 }

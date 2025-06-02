@@ -8,15 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using System.Diagnostics.Eventing.Reader;
+using Melnitsa_server.ViewModel;
+using System.Windows;
 
 
 namespace Melnitsa_server.ViewModel
 {
     public class MainViewModel:INotifyPropertyChanged
     {
-        public MainViewModel() 
-        { 
-        }
+       
 
         
 
@@ -87,6 +88,36 @@ namespace Melnitsa_server.ViewModel
             }
         }
 
+        private bool status_Button;
+
+        public bool Status_Button
+        {
+            get { return status_Button; }
+            set
+            {
+                status_Button = value;
+                OnPropertyChanged(nameof(Status_Button));
+            }
+        }
+
+        private string name_button;
+
+        public string Name_button
+        {
+            get { return name_button; }
+            set
+            {
+                name_button = value;
+                OnPropertyChanged(nameof(Name_button));
+            }
+        }
+
+        public MainViewModel()
+        {
+            Name_button = "Запустить сервер";
+            Status_Button = false;
+        }
+
         private RelayCommand? turnonCommand;
 
         public RelayCommand TurnonCommand
@@ -100,26 +131,40 @@ namespace Melnitsa_server.ViewModel
                             using Socket tcpListener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                             Random random = new Random();
                             try
-                            {
-                                tcpListener.Bind(ipPoint);
-                                tcpListener.Listen();
-                                On = "Сервер запущен. Ожидание подключений... ";
-                                Color = "gray";
-                                Error = "Ошибок не найдено";
-                                while (true)
+                            {   if (Name_button == "Запустить сервер")
                                 {
+                                    tcpListener.Bind(ipPoint);
+                                    tcpListener.Listen();
+                                    Name_button = "Остановить сервер";
+                                    On = "Сервер запущен. Ожидание подключений... ";
+                                    Color = "gray";
+                                    Error = "Ошибок не найдено";
+                                    while (true)
+                                    {
 
-                                    using var tcpClient = await tcpListener.AcceptAsync();
+                                        using var tcpClient = await tcpListener.AcceptAsync();
 
-                                    Speed = random.Next(10, 100);
+                                        Speed = random.Next(10, 100);
 
-                                    byte[] data = Encoding.UTF8.GetBytes(Speed.ToString());
+                                        byte[] data = Encoding.UTF8.GetBytes(Speed.ToString());
 
-                                    await tcpClient.SendAsync(data);
+                                        await tcpClient.SendAsync(data);
 
-                                    Clients_info += $"Клиенту {tcpClient.RemoteEndPoint} отправлены данные - {Speed}\n";
+                                        Clients_info += $"Клиенту {tcpClient.RemoteEndPoint} отправлены данные - {Speed}\n";
+
+                                    }
+                                }
+                                else
+                                {
+                                    tcpListener.Close();
+                                    Name_button = "Сервер приостановлен";
+                                    On = "";
+                                    Error = "Для повторного включения сервера перезапустите приложение";
+                                    Clients_info = "";
+                                    Status_Button = true;
                                     
                                 }
+                                
                             }
                             catch (Exception ex)
                             {

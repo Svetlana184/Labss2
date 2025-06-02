@@ -1,0 +1,18 @@
+﻿<Window x:Class="Melnitsa_client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Melnitsa_client"
+        mc:Ignorable="d"
+        Title="Melnitsa_app" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="6*"/>
+        </Grid.RowDefinitions>
+        <Button Grid.Row="0" Height="60" Width="200" Command="{Binding SpeedCommand}">Подключиться к серверу</Button>
+        <TextBlock Grid.Row="1"  Height="100" TextAlignment="Center" Text="{Binding Clients_info}"></TextBlock>
+    </Grid>
+</Window>

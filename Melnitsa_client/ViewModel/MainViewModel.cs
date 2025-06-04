@@ -108,9 +108,25 @@ namespace Melnitsa_client.ViewModel
                             int bytes = await tcpClient.ReceiveAsync(data);
                             string speed_str = Encoding.UTF8.GetString(data, 0, bytes);
                             Speed = int.Parse(speed_str);
-                            Clients_info = $"Скорость кручения мельницы: {Speed}";
 
-                            Thread melnitsa_thread = new Thread(RotateMelnitsa);
+                            if (Speed <= 5) Clients_info = "Смотрите, как бы вас не сдуло!";
+                            else if(Speed <=10 && Speed > 5) Clients_info = "Сегодня средний ветер";
+                            else Clients_info = "Сегодня очень легкий ветерок";
+
+                            if(Speed % 10 == 0 || Speed % 10 >= 5 && Speed % 10 <= 9 || Speed % 100 >= 11 && Speed % 100 <= 13)
+                            {
+                                Clients_info += $"\nМельница совершает полный оборот за {Speed} секунды";
+                            }
+                            else if (Speed % 10 == 1)
+                            {
+                                Clients_info += $"\nМельница совершает полный оборот за {Speed} секунду";
+                            }
+                            else
+                            {
+                                Clients_info += $"\nМельница совершает полный оборот за {Speed} секунд";
+                            }
+
+                                Thread melnitsa_thread = new Thread(RotateMelnitsa);
 
                             melnitsa_thread.Start();
                             

@@ -144,7 +144,7 @@ namespace Melnitsa_server.ViewModel
 
                                         using var tcpClient = await tcpListener.AcceptAsync();
 
-                                        Speed = random.Next(10, 100);
+                                        Speed = random.Next(1, 20);
 
                                         byte[] data = Encoding.UTF8.GetBytes(Speed.ToString());
 

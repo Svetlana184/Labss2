@@ -35,6 +35,18 @@ namespace Melnitsa_client.ViewModel
             }
         }
 
+        private double angleMelnitsa;
+
+        public double AngleMelnitsa
+        {
+            get { return angleMelnitsa; }
+            set
+            {
+                angleMelnitsa = value;
+                OnPropertyChanged(nameof(AngleMelnitsa));
+            }
+        }
+
         private string clients_info;
 
         public string Clients_info
@@ -83,6 +95,24 @@ namespace Melnitsa_client.ViewModel
                             int speed = int.Parse(speed_str);
 
                             Clients_info = $"Скорость кручения мельницы: {speed}";
+
+                            Thread melnitsa_thread = new Thread(RotateMelnitsa);
+                            melnitsa_thread.Start();
+
+                            void RotateMelnitsa()
+                            {
+                                while(true)
+                                {
+                                    if (AngleMelnitsa == 360) AngleMelnitsa = 0;
+                                    AngleMelnitsa += 40;
+                                    //double speed_two = (36 * 60 / Speed);
+                                    if(speed != 0){
+                                        Thread.Sleep((int)(1000/9.0));
+                                    }
+                                    
+
+                                }
+                            }
                         }
                         catch (Exception ex)
                         {

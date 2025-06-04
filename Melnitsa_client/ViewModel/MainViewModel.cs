@@ -15,7 +15,7 @@ namespace Melnitsa_client.ViewModel
     {
         public MainViewModel()
         {
-            Name_button = "Запустить мельницу";
+            CancelButton = false;
         }
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -72,15 +72,15 @@ namespace Melnitsa_client.ViewModel
             }
         }
 
-        private string name_button;
+        private bool cancelButton;
 
-        public string Name_button
+        public bool CancelButton
         {
-            get { return name_button; }
+            get { return cancelButton; }
             set
             {
-                name_button = value;
-                OnPropertyChanged(nameof(Name_button));
+                cancelButton = value;
+                OnPropertyChanged(nameof(CancelButton));
             }
         }
 
@@ -93,47 +93,31 @@ namespace Melnitsa_client.ViewModel
                 return speedCommand ??
                     (speedCommand = new RelayCommand(async (o) =>
                     {
-                        using var tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        Thread melnitsa_thread = new Thread(RotateMelnitsa);
-                        void RotateMelnitsa()
+                        
+                        
+                        try
                         {
-                            while(Speed!=0)
+                            using var tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                            await tcpClient.ConnectAsync("127.0.0.1", 8888);
+                            byte[] data = new byte[512];
+                            int bytes = await tcpClient.ReceiveAsync(data);
+                            string speed_str = Encoding.UTF8.GetString(data, 0, bytes);
+                            int speed = int.Parse(speed_str);
+                            Clients_info = $"Скорость кручения мельницы: {speed}";
+
+                            
+
+                            Thread melnitsa_thread = new Thread(RotateMelnitsa);
+
+                            melnitsa_thread.Start();
+                            CancelButton = true;
+                            void RotateMelnitsa()
                             {
                                 if (AngleMelnitsa == 360) AngleMelnitsa = 0;
                                 AngleMelnitsa += 40;
-                                //double speed_two = (36 * 60 / Speed);
-                                Thread.Sleep((int)(1000 / 9.0));
+                                Thread.Sleep(1000);
                             }
-                        }
-                        try
-                        {
-                            if(Name_button== "Запустить мельницу")
-                            {
-                                await tcpClient.ConnectAsync("127.0.0.1", 8888);
 
-                                byte[] data = new byte[512];
-
-
-                                int bytes = await tcpClient.ReceiveAsync(data);
-
-                                string speed_str = Encoding.UTF8.GetString(data, 0, bytes);
-
-                                int speed = int.Parse(speed_str);
-
-                                Clients_info = $"Скорость кручения мельницы: {speed}";
-
-                                Name_button = "Остановить мельницу";
-                                melnitsa_thread.Start();
-
-                                
-                            }
-                            else
-                            {
-                                Name_button = "Запустить мельницу";
-                                Speed = 0;
-                                
-                            }
-                            
                         }
                         catch (Exception ex)
                         {

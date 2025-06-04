@@ -17,7 +17,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Button Grid.Row="0" Grid.Column="0" Width="270" Height="60" Command="{Binding TurnonCommand}" Content="{Binding Name_button}" IsEnabled="{Binding Status_Button}" Background="White"></Button>
-        <Button Grid.Row="0" Grid.Column="1" Width="270" Height="60" Command="{Binding TurnoffCommand}" Background="#FF5D4C4C" Foreground="White">Очистить историю подключений</Button>
+        <Button Grid.Row="0" Grid.Column="1" Width="270" Height="60" Command="{Binding TurnoffCommand}" Background="#FF331919" Foreground="White">Очистить историю подключений</Button>
         <TextBlock Grid.Row="1" Grid.Column="0" Height="100" TextAlignment="Center" Text="{Binding On}"></TextBlock>
         <TextBlock Grid.Row="1" Grid.Column="1" Height="100" TextAlignment="Center" Text="{Binding Clients_info}"></TextBlock>
         <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Height="100" TextAlignment="Center" Text="{Binding Error}" Foreground="{Binding Color}"></TextBlock>

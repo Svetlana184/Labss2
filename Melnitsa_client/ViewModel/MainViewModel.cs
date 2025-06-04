@@ -15,7 +15,8 @@ namespace Melnitsa_client.ViewModel
     {
         public MainViewModel()
         {
-            CancelButton = false;
+            CancelButton = true;
+            VisButton = "Visible";
         }
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -60,6 +61,18 @@ namespace Melnitsa_client.ViewModel
             }
         }
 
+        private string visButton;
+
+        public string VisButton
+        {
+            get { return visButton; }
+            set
+            {
+                visButton = value;
+                OnPropertyChanged(nameof(VisButton));
+            }
+        }
+
         private string color;
 
         public string Color
@@ -93,8 +106,9 @@ namespace Melnitsa_client.ViewModel
                 return speedCommand ??
                     (speedCommand = new RelayCommand(async (o) =>
                     {
-                        
-                        
+
+                        CancelButton = false;
+                        //VisButton = "Hidden";
                         try
                         {
                             using var tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -105,17 +119,19 @@ namespace Melnitsa_client.ViewModel
                             int speed = int.Parse(speed_str);
                             Clients_info = $"Скорость кручения мельницы: {speed}";
 
-                            
-
                             Thread melnitsa_thread = new Thread(RotateMelnitsa);
 
                             melnitsa_thread.Start();
-                            CancelButton = true;
+                            
                             void RotateMelnitsa()
                             {
-                                if (AngleMelnitsa == 360) AngleMelnitsa = 0;
-                                AngleMelnitsa += 40;
-                                Thread.Sleep(1000);
+                                while (true)
+                                {
+                                    if (AngleMelnitsa == 360) AngleMelnitsa = 0;
+                                    AngleMelnitsa += 40;
+                                    Thread.Sleep(100);
+                                }
+                               
                             }
 
                         }

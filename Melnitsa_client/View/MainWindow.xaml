@@ -12,7 +12,7 @@
             <RowDefinition Height="2*"/>
             <RowDefinition Height="6*"/>
         </Grid.RowDefinitions>
-        <Button Grid.Row="0" Height="60" Width="200" Command="{Binding SpeedCommand}" IsCancel="{Binding CancelButton}">Запустить мельницу</Button>
+        <Button Grid.Row="0" Height="60" Width="200" Command="{Binding SpeedCommand}" Visibility="{Binding VisButton}" IsEnabled="{Binding CancelButton}">Запустить мельницу</Button>
         <TextBlock Grid.Row="1"  Height="100" TextAlignment="Center" Text="{Binding Clients_info}"></TextBlock>
         <Image Width="200" Height="200" Grid.Row="2" RenderTransformOrigin="0.5,0.5" Source="\Images\melnitsa.jpg" >
             <Image.RenderTransform>

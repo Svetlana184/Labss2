@@ -109,13 +109,13 @@ namespace Melnitsa_client.ViewModel
                             string speed_str = Encoding.UTF8.GetString(data, 0, bytes);
                             Speed = int.Parse(speed_str);
 
-                            if (Speed <= 5) Clients_info = "Смотрите, как бы вас не сдуло!";
-                            else if(Speed <=10 && Speed > 5) Clients_info = "Сегодня средний ветер";
+                            if (Speed <= 3) Clients_info = "Смотрите, как бы вас не сдуло!";
+                            else if(Speed <=5 && Speed > 3) Clients_info = "Сегодня средний ветер";
                             else Clients_info = "Сегодня очень легкий ветерок";
 
                             if(Speed % 10 == 0 || Speed % 10 >= 5 && Speed % 10 <= 9 || Speed % 100 >= 11 && Speed % 100 <= 13)
                             {
-                                Clients_info += $"\nМельница совершает полный оборот за {Speed} секунды";
+                                Clients_info += $"\nМельница совершает полный оборот за {Speed} секунд";
                             }
                             else if (Speed % 10 == 1)
                             {
@@ -123,7 +123,7 @@ namespace Melnitsa_client.ViewModel
                             }
                             else
                             {
-                                Clients_info += $"\nМельница совершает полный оборот за {Speed} секунд";
+                                Clients_info += $"\nМельница совершает полный оборот за {Speed} секунды";
                             }
 
                                 Thread melnitsa_thread = new Thread(RotateMelnitsa);

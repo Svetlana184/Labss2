@@ -115,7 +115,7 @@ namespace Melnitsa_server.ViewModel
         public MainViewModel()
         {
             Name_button = "Запустить сервер";
-            Status_Button = false;
+            Status_Button = true;
         }
 
         private RelayCommand? turnonCommand;
@@ -137,14 +137,14 @@ namespace Melnitsa_server.ViewModel
                                     tcpListener.Listen();
                                     Name_button = "Остановить сервер";
                                     On = "Сервер запущен. Ожидание подключений... ";
-                                    Color = "gray";
+                                    Color = "white";
                                     Error = "Ошибок не найдено";
                                     while (true)
                                     {
 
                                         using var tcpClient = await tcpListener.AcceptAsync();
 
-                                        Speed = random.Next(1, 20);
+                                        Speed = random.Next(1, 10);
 
                                         byte[] data = Encoding.UTF8.GetBytes(Speed.ToString());
 
@@ -161,14 +161,14 @@ namespace Melnitsa_server.ViewModel
                                     On = "";
                                     Error = "Для повторного включения сервера перезапустите приложение";
                                     Clients_info = "";
-                                    Status_Button = true;
+                                    Status_Button = false;
                                     
                                 }
                                 
                             }
                             catch (Exception ex)
                             {
-                                Color = "red";
+                                Color = "Pink";
                                 Error = ex.Message;
            
                             }

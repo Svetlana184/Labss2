@@ -16,7 +16,7 @@ namespace Melnitsa_client.ViewModel
         public MainViewModel()
         {
             CancelButton = true;
-            VisButton = "Visible";
+            Color = "White";
         }
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -61,18 +61,8 @@ namespace Melnitsa_client.ViewModel
             }
         }
 
-        private string visButton;
 
-        public string VisButton
-        {
-            get { return visButton; }
-            set
-            {
-                visButton = value;
-                OnPropertyChanged(nameof(VisButton));
-            }
-        }
-
+        
         private string color;
 
         public string Color
@@ -97,6 +87,7 @@ namespace Melnitsa_client.ViewModel
             }
         }
 
+
         private RelayCommand? speedCommand;
 
         public RelayCommand SpeedCommand
@@ -108,7 +99,7 @@ namespace Melnitsa_client.ViewModel
                     {
 
                         CancelButton = false;
-                        //VisButton = "Hidden";
+                        
                         try
                         {
                             using var tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -116,8 +107,8 @@ namespace Melnitsa_client.ViewModel
                             byte[] data = new byte[512];
                             int bytes = await tcpClient.ReceiveAsync(data);
                             string speed_str = Encoding.UTF8.GetString(data, 0, bytes);
-                            int speed = int.Parse(speed_str);
-                            Clients_info = $"Скорость кручения мельницы: {speed}";
+                            Speed = int.Parse(speed_str);
+                            Clients_info = $"Скорость кручения мельницы: {Speed}";
 
                             Thread melnitsa_thread = new Thread(RotateMelnitsa);
 
@@ -129,7 +120,8 @@ namespace Melnitsa_client.ViewModel
                                 {
                                     if (AngleMelnitsa == 360) AngleMelnitsa = 0;
                                     AngleMelnitsa += 40;
-                                    Thread.Sleep(100);
+                                    double time = Speed / 9.0 * 1000.0;
+                                    Thread.Sleep((int)(time));
                                 }
                                
                             }
@@ -138,6 +130,7 @@ namespace Melnitsa_client.ViewModel
                         catch (Exception ex)
                         {
                             Clients_info = ex.Message;
+                            Color = "Pink";
                         }
                     }));
             }

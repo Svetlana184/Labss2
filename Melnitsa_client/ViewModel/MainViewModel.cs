@@ -135,8 +135,8 @@ namespace Melnitsa_client.ViewModel
                                 while (true)
                                 {
                                     if (AngleMelnitsa == 360) AngleMelnitsa = 0;
-                                    AngleMelnitsa += 40;
-                                    double time = Speed / 9.0 * 1000.0;
+                                    AngleMelnitsa += 4;
+                                    double time = Speed / 90.0 * 1000.0;
                                     Thread.Sleep((int)(time));
                                 }
                                

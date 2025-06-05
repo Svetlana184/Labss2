@@ -39,7 +39,7 @@ async Task<List<Rule>> GetRules()
     return rules!;
 }
 //var bot = new TelegramBotClient("", cancellationToken: cts.Token);
-var token = "";
+var token = "7859735232:AAFROH90ZnkB79eBKrsn2BdPQGYHcUm3zHc";
 using var cts = new CancellationTokenSource();
 var bot = new TelegramBotClient(token, cancellationToken: cts.Token);
 var me = await bot.GetMe();
@@ -61,7 +61,7 @@ async Task OnMessage(Message msg, UpdateType type)
 {
     if (msg.Text is not { } text)
     {
-        Console.WriteLine($"Received a message of type {msg.Type}");
+        Console.WriteLine($"Received a message of type {msg.Type} {msg.Chat}");
     }
     else if (text.StartsWith("/"))
     {
@@ -79,7 +79,7 @@ async Task OnMessage(Message msg, UpdateType type)
 async Task OnTextMessage(Message msg)
 {
     Console.WriteLine($"Received command:{msg.Text} in {msg.Chat}");
-    await OnCommand("/start", "", msg);
+    //await OnCommand("/start", "", msg);
     
 }
 async Task OnCommand(string command, string args, Message msg)
@@ -152,10 +152,7 @@ async Task OnCommand(string command, string args, Message msg)
                 """, parseMode: ParseMode.Html, linkPreviewOptions: true,
                 replyMarkup: new ReplyKeyboardRemove());
             break;
-            break;
-        default:
-            await bot.SendMessage(msg.Chat, "бот не знает такой команды(");
-            break;
+        
     }
 }
 

@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melnitsa_server", "Melnitsa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Melnitsa_client", "Melnitsa_client\Melnitsa_client.csproj", "{5C3D5B50-2226-4A99-9BFA-74A7F161943C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telegram_bot", "Telegram_bot\Telegram_bot.csproj", "{6CBDA2B3-3E0D-4D6F-8586-4EB51786588E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API_DndBot", "API_DndBot\API_DndBot.csproj", "{D6489343-81FF-41D2-927D-675382DD1073}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{5C3D5B50-2226-4A99-9BFA-74A7F161943C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C3D5B50-2226-4A99-9BFA-74A7F161943C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C3D5B50-2226-4A99-9BFA-74A7F161943C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CBDA2B3-3E0D-4D6F-8586-4EB51786588E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CBDA2B3-3E0D-4D6F-8586-4EB51786588E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CBDA2B3-3E0D-4D6F-8586-4EB51786588E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CBDA2B3-3E0D-4D6F-8586-4EB51786588E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6489343-81FF-41D2-927D-675382DD1073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6489343-81FF-41D2-927D-675382DD1073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6489343-81FF-41D2-927D-675382DD1073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6489343-81FF-41D2-927D-675382DD1073}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

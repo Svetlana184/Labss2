@@ -59,8 +59,9 @@ public partial class DndBotContext : DbContext
             entity.Property(e => e.Genre).HasColumnType("ntext");
             entity.Property(e => e.NameGame).HasMaxLength(50);
             entity.Property(e => e.Setting).HasMaxLength(100);
-            entity.Property(e => e.System).HasMaxLength(50);
+            entity.Property(e => e.Source).HasMaxLength(50);
             entity.Property(e => e.Vibes).HasColumnType("ntext");
+            entity.Property(e => e.Oficiality).HasMaxLength(100);
         });
 
         modelBuilder.Entity<GameImage>(entity =>

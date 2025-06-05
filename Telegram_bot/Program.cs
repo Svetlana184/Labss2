@@ -130,8 +130,8 @@ async Task OnCommand(string command, string args, Message msg)
                 ["кампейн"]
             });
             await bot.SendMessage(msg.Chat, "Выберите, официальная ли игра и ее сеттинг", replyMarkup: new InlineKeyboardButton[][] {
-                ["Официальная"],
-                ["Неофициальная"]
+                ["официальная"],
+                ["неофициальная"]
             });
             
 
@@ -229,7 +229,7 @@ async Task OnCallbackQueryGame(CallbackQuery callbackQuery)
             await bot.SendMessage(callbackQuery.Message!.Chat, $"""
                 <b><u>{game.NameGame}</u></b>:
                 
-                <u>{game.System}</u>
+                <u>{game.Source}</u>
 
                 <u>{game.Setting}</u>
 
@@ -331,7 +331,7 @@ async Task<List<Rule>> RuleGen(string filter)
 async Task<List<Game>> GameGen()
 {
     Task<List<Game>> task = Task.Run(() => GetGames());
-    List<Game> games = task.Result.Where(x => x.FromWho == filters[0] && x.Duration == filters[1] && x.System == filters[2]).ToList();
+    List<Game> games = task.Result.Where(x => x.FromWho == filters[0] && x.Duration == filters[1] && x.Source == filters[2]).ToList();
     return games;
 }
 

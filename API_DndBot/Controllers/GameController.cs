@@ -21,12 +21,13 @@ namespace API_DndBot.Controllers
                             e.IdGame,
                             e.NameGame,
                             e.DescriptionGame,
-                            e.System,
+                            e.Source,
                             e.Setting,
                             e.Vibes,
                             e.Genre,
                             e.Duration,
-                            e.FromWho
+                            e.FromWho,
+                            e.Oficiality
                         };
             return games.AsQueryable();
         }

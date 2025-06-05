@@ -40,7 +40,7 @@ async Task<List<Rule>> GetRules()
     return rules!;
 }
 //var bot = new TelegramBotClient("", cancellationToken: cts.Token);
-var token = "";
+var token = "7859735232:AAFROH90ZnkB79eBKrsn2BdPQGYHcUm3zHc";
 using var cts = new CancellationTokenSource();
 var bot = new TelegramBotClient(token, cancellationToken: cts.Token);
 var me = await bot.GetMe();
@@ -119,23 +119,23 @@ async Task OnCommand(string command, string args, Message msg)
             });
             break;
         case "/games":
-            await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
-                ["Игры от бота"],
-                ["Игры от пользователей"],
-                ["Все"]
+            await bot.SendMessage(msg.Chat, "Выберите от кого будет игра:", replyMarkup: new InlineKeyboardButton[][] {
+                ["пользовательская"],
+                ["системная"]
             });
-            await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
+            await bot.SendMessage(msg.Chat, "Выберите длительность:", replyMarkup: new InlineKeyboardButton[][] {
                 ["ваншот"],
                 ["2-3 партии"],
                 ["модуль"],
-                ["кампейн"],
-                ["Любая"]
+                ["кампейн"]
             });
-            await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
-                ["Официальный сеттинг"],
-                ["Неофициальный сеттинг"]
+            await bot.SendMessage(msg.Chat, "Выберите, официальная ли игра и ее сеттинг", replyMarkup: new InlineKeyboardButton[][] {
+                ["Официальная"],
+                ["Неофициальная"]
             });
+            
 
+            Array.Clear(filters);
             break;
         case "/generators":
             await bot.SendMessage(msg.Chat, "Выберите генератор:", replyMarkup: new InlineKeyboardButton[][] {
@@ -180,8 +180,21 @@ async Task OnUpdate(Update update)
                                 await OnCallbackQuery(callbackQuery);
                                 break;
                             }
-                        case "Выберите параметр игры:":
+                        case "Выберите от кого будет игра:":
                             {
+                                filters[0] = callbackQuery.Data!;
+                                await OnCallbackQuery(callbackQuery);
+                                break;
+                            }
+                        case "Выберите длительность:":
+                            {
+                                filters[1] = callbackQuery.Data!;
+                                await OnCallbackQuery(callbackQuery);
+                                break;
+                            }
+                        case "Выберите, официальная ли игра и ее сеттинг":
+                            {
+                                filters[2] = callbackQuery.Data!;
                                 await OnCallbackQueryGame(callbackQuery);
                                 await OnCallbackQuery(callbackQuery);
                                 break;
@@ -204,10 +217,13 @@ async Task OnUpdate(Update update)
 
 async Task OnCallbackQueryGame(CallbackQuery callbackQuery)
 {
-    filters.Append(callbackQuery.Data);
-    if (filters[2] != null)
+    List<Game> games = await GameGen();
+    if (games.Count == 0)
     {
-        List<Game> games = await GameGen();
+        await bot.SendMessage(callbackQuery.Message!.Chat, "Игр не найдено(((");
+    }
+    else
+    {
         foreach (Game game in games)
         {
             await bot.SendMessage(callbackQuery.Message!.Chat, $"""
@@ -231,11 +247,8 @@ async Task OnCallbackQueryGame(CallbackQuery callbackQuery)
                 """, parseMode: ParseMode.Html, linkPreviewOptions: true,
                          replyMarkup: new ReplyKeyboardRemove());
         }
-        Array.Clear(filters);
-
     }
 }
-
 
 async Task OnCallbackQueryRule(CallbackQuery callbackQuery)
 {

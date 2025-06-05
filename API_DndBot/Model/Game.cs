@@ -11,7 +11,7 @@ public partial class Game
 
     public string DescriptionGame { get; set; } = null!;
 
-    public string System { get; set; } = null!;
+    public string Source { get; set; } = null!;
 
     public string Setting { get; set; } = null!;
 
@@ -23,5 +23,6 @@ public partial class Game
 
     public string FromWho { get; set; } = null!;
 
+    public string Oficiality { get; set; } = null!;
     public virtual ICollection<GameImage> GameImages { get; set; } = new List<GameImage>();
 }

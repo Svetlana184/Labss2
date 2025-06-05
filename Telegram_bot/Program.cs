@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using System.Linq;
 using System.Net.Http.Json;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -110,15 +111,11 @@ async Task OnCommand(string command, string args, Message msg)
                 replyMarkup: new ReplyKeyboardRemove());
             break;
         case "/rules":
-            Task<List<Rule>> taskRul = Task.Run(() => GetRules());
-            List<Rule> rules = taskRul.Result;
-            List<string> filter = (from e in rules select e.TypeOfRule).ToList();
-            SortedSet<string> types = new SortedSet<string>();
-            for (int i=0;  i<rules.Count; i++)
-            {
-                types.Add(filter[i] + "\n");
-            }
-            await bot.SendMessage(msg.Chat, "читай книгу игрока, идиот");
+            await bot.SendMessage(msg.Chat, "Выберите тип правил:", replyMarkup: new InlineKeyboardButton[][] {
+                ["Базовые правила"],
+                ["Бой"],
+                ["Полезности"]
+            });
             break;
         case "/games":
            
@@ -165,6 +162,12 @@ async Task OnUpdate(Update update)
                                 await OnCallbackQuery(callbackQuery);
                                 break;
                             }
+                        case "Выберите тип правил:":
+                            {
+                                await OnCallbackQueryRule(callbackQuery);
+                                await OnCallbackQuery(callbackQuery);
+                                break;
+                            }
                         default:
                             {
                                 await OnCallbackQuery(callbackQuery);
@@ -179,6 +182,25 @@ async Task OnUpdate(Update update)
         default: Console.WriteLine($"Received unhandled update {update.Type}"); break;
     }
     ;
+}
+async Task OnCallbackQueryRule(CallbackQuery callbackQuery)
+{
+    List<Rule> rules = await RuleGen(callbackQuery.Data!);
+    if (rules != null)
+    {
+        foreach (Rule rule in rules)
+        {
+            await bot.SendMessage(callbackQuery.Message!.Chat, $"""
+                <b><u>{rule.NameRule}</u></b>:
+                
+                {rule.DescriptionRule}
+
+                <a href="{rule.Link}">Ссылка</a>
+                """, parseMode: ParseMode.Html, linkPreviewOptions: true,
+                         replyMarkup: new ReplyKeyboardRemove());
+        }
+    }
+    else await bot.SendMessage(callbackQuery.Message!.Chat, "Правил такого типа не найдено!");
 }
 async Task OnCallbackQueryGen(CallbackQuery callbackQuery)
 {
@@ -231,6 +253,14 @@ async Task<GeneratorVibe> VibeGen()
     GeneratorVibe vibe_for_today = vibes[number];
     return vibe_for_today;
 }
+
+async Task<List<Rule>> RuleGen(string filter)
+{
+    Task<List<Rule>> task = Task.Run(()=> GetRules());
+    List<Rule> rules = task.Result.Where(x => x.TypeOfRule == filter).ToList();
+    return rules;
+}
+
 async Task OnPollAnswer(PollAnswer pollAnswer)
 {
     if (pollAnswer.User != null)

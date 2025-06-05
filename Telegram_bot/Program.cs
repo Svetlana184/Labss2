@@ -9,18 +9,19 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Telegram_bot;
 using Telegram_bot.Model;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Game = Telegram_bot.Model.Game;
 
 HttpClient client = new HttpClient();
 Random random = new Random();
-
+string[] filters = new string[3];
 async Task<List<Fact>> GetFacts()
 {
     List<Fact>? facts = await client.GetFromJsonAsync<List<Fact>>("http://localhost:5254/Facts");
     return facts!;
 }
-async Task<List<Telegram_bot.Model.Game>> GetGames()
+async Task<List<Game>> GetGames()
 {
-    List<Telegram_bot.Model.Game>? games = await client.GetFromJsonAsync<List<Telegram_bot.Model.Game>>("http://localhost:5254/Games");
+    List<Game>? games = await client.GetFromJsonAsync<List<Game>>("http://localhost:5254/Games");
     return games!;
 }
 async Task<List<GeneratorLocation>> GetLocs()
@@ -39,7 +40,7 @@ async Task<List<Rule>> GetRules()
     return rules!;
 }
 //var bot = new TelegramBotClient("", cancellationToken: cts.Token);
-var token = "7859735232:AAFROH90ZnkB79eBKrsn2BdPQGYHcUm3zHc";
+var token = "";
 using var cts = new CancellationTokenSource();
 var bot = new TelegramBotClient(token, cancellationToken: cts.Token);
 var me = await bot.GetMe();
@@ -124,16 +125,17 @@ async Task OnCommand(string command, string args, Message msg)
                 ["Все"]
             });
             await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
-                ["Ваншот"],
+                ["ваншот"],
                 ["2-3 партии"],
-                ["Модуль"],
-                ["Кампейн"],
+                ["модуль"],
+                ["кампейн"],
                 ["Любая"]
             });
             await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
                 ["Официальный сеттинг"],
                 ["Неофициальный сеттинг"]
             });
+
             break;
         case "/generators":
             await bot.SendMessage(msg.Chat, "Выберите генератор:", replyMarkup: new InlineKeyboardButton[][] {
@@ -180,6 +182,7 @@ async Task OnUpdate(Update update)
                             }
                         case "Выберите параметр игры:":
                             {
+                                await OnCallbackQueryGame(callbackQuery);
                                 await OnCallbackQuery(callbackQuery);
                                 break;
                             }
@@ -198,6 +201,41 @@ async Task OnUpdate(Update update)
     }
     ;
 }
+
+async Task OnCallbackQueryGame(CallbackQuery callbackQuery)
+{
+    filters.Append(callbackQuery.Data);
+    if (filters[2] != null)
+    {
+        List<Game> games = await GameGen();
+        foreach (Game game in games)
+        {
+            await bot.SendMessage(callbackQuery.Message!.Chat, $"""
+                <b><u>{game.NameGame}</u></b>:
+                
+                <u>{game.System}</u>
+
+                <u>{game.Setting}</u>
+
+                <u>{game.Genre}</u>
+
+                <u>{game.Duration}</u>
+
+                <u>{game.FromWho}</u>
+
+                ***
+
+                {game.Vibes}
+
+                {game.DescriptionGame}
+                """, parseMode: ParseMode.Html, linkPreviewOptions: true,
+                         replyMarkup: new ReplyKeyboardRemove());
+        }
+        Array.Clear(filters);
+
+    }
+}
+
 
 async Task OnCallbackQueryRule(CallbackQuery callbackQuery)
 {
@@ -275,6 +313,13 @@ async Task<List<Rule>> RuleGen(string filter)
     Task<List<Rule>> task = Task.Run(()=> GetRules());
     List<Rule> rules = task.Result.Where(x => x.TypeOfRule == filter).ToList();
     return rules;
+}
+
+async Task<List<Game>> GameGen()
+{
+    Task<List<Game>> task = Task.Run(() => GetGames());
+    List<Game> games = task.Result.Where(x => x.FromWho == filters[0] && x.Duration == filters[1] && x.System == filters[2]).ToList();
+    return games;
 }
 
 async Task OnPollAnswer(PollAnswer pollAnswer)

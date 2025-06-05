@@ -5,6 +5,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using Telegram_bot;
 using Telegram_bot.Model;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -16,7 +17,26 @@ async Task<List<Fact>> GetFacts()
     List<Fact>? facts = await client.GetFromJsonAsync<List<Fact>>("http://localhost:5254/Facts");
     return facts!;
 }
-
+async Task<List<Telegram_bot.Model.Game>> GetGames()
+{
+    List<Telegram_bot.Model.Game>? games = await client.GetFromJsonAsync<List<Telegram_bot.Model.Game>>("http://localhost:5254/Games");
+    return games!;
+}
+async Task<List<GeneratorLocation>> GetLocs()
+{
+    List<GeneratorLocation>? locs = await client.GetFromJsonAsync<List<GeneratorLocation>>("http://localhost:5254/Locations");
+    return locs!;
+}
+async Task<List<GeneratorVibe>> GetVibes()
+{
+    List<GeneratorVibe>? vibes = await client.GetFromJsonAsync<List<GeneratorVibe>>("http://localhost:5254/Vibes");
+    return vibes!;
+}
+async Task<List<Rule>> GetRules()
+{
+    List<Rule>? rules = await client.GetFromJsonAsync<List<Rule>>("http://localhost:5254/Rules");
+    return rules!;
+}
 //var bot = new TelegramBotClient("7859735232:AAFROH90ZnkB79eBKrsn2BdPQGYHcUm3zHc", cancellationToken: cts.Token);
 var token = "7859735232:AAFROH90ZnkB79eBKrsn2BdPQGYHcUm3zHc";
 using var cts = new CancellationTokenSource();
@@ -59,6 +79,7 @@ async Task OnTextMessage(Message msg)
 {
     Console.WriteLine($"Received command:{msg.Text} in {msg.Chat}");
     await OnCommand("/start", "", msg);
+    
 }
 async Task OnCommand(string command, string args, Message msg)
 {
@@ -72,14 +93,14 @@ async Task OnCommand(string command, string args, Message msg)
                 /rules                    - изучите базовые правила днд
                 /games                 - выберите концепцию для игры
                 /generators         - сгенерируйте элемент игры
-                /help                     - узнайте больше о функциях бота
+                /help                     - узнайте о функциях бота
                 """, parseMode: ParseMode.Html, linkPreviewOptions: true,
                 replyMarkup: new ReplyKeyboardRemove());
             break;
         case "/fact_of_the_day":
             Task<List<Fact>> task = Task.Run(() => GetFacts());
             List<Fact> facts = task.Result;
-            int number = random.Next(1, facts.Count - 1);
+            int number = random.Next(0, facts.Count - 1);
             Fact fact_for_today = facts[number]; 
             await bot.SendMessage(msg.Chat, $"""
                 <b><u>{fact_for_today.NameFact}</u></b>:
@@ -95,10 +116,22 @@ async Task OnCommand(string command, string args, Message msg)
             await bot.SendMessage(msg.Chat, "сам придумай");
             break;
         case "/generators":
-            await bot.SendMessage(msg.Chat, "человек воин");
+            await bot.SendMessage(msg.Chat, "Выберите генератор:", replyMarkup: new InlineKeyboardButton[][] {
+                ["Генератор локаций"],
+                ["Рандом генератор"]
+            });
             break;
         case "/help":
-            await bot.SendMessage(msg.Chat, "спасение утопающих - дело рук самих утопающих");
+            await bot.SendMessage(msg.Chat, """
+                <b><u>Bot menu</u></b>:
+                /fact_of_the_day - ознакомьтесь с фактом дня
+                /rules                    - изучите базовые правила днд
+                /games                 - выберите концепцию для игры
+                /generators         - сгенерируйте элемент игры
+                /help                     - узнайте о функциях бота
+                """, parseMode: ParseMode.Html, linkPreviewOptions: true,
+                replyMarkup: new ReplyKeyboardRemove());
+            break;
             break;
         default:
             await bot.SendMessage(msg.Chat, "бот не знает такой команды(");
@@ -110,16 +143,84 @@ async Task OnUpdate(Update update)
 {
     switch (update)
     {
-        case { CallbackQuery: { } callbackQuery }: await OnCallbackQuery(callbackQuery); break;
+        case { CallbackQuery: { } callbackQuery }:
+            {
+                var i = callbackQuery.Message.Text;
+                if(callbackQuery.Message!.Text != null)
+                {
+                    switch (callbackQuery.Message.Text)
+                    {
+                        case "Выберите генератор:":
+                            {
+                                await OnCallbackQueryGen(callbackQuery);
+                                await OnCallbackQuery(callbackQuery);
+                                break;
+                            }
+                        default:
+                            {
+                                await OnCallbackQuery(callbackQuery);
+                                break;
+                            }
+
+                    }
+                }
+                break;
+            }
         case { PollAnswer: { } pollAnswer }: await OnPollAnswer(pollAnswer); break;
         default: Console.WriteLine($"Received unhandled update {update.Type}"); break;
     }
     ;
 }
+async Task OnCallbackQueryGen(CallbackQuery callbackQuery)
+{
+    switch (callbackQuery.Data)
+    {
+        case "Генератор локаций":
+            {
+                await bot.SendMessage(callbackQuery.Message!.Chat, $"генерируем локацию...");
+                GeneratorLocation loca = await LocationGen();
+                await bot.SendMessage(callbackQuery.Message!.Chat, $"""
+                <b><u>{loca.NameLocation}</u></b>:
+                
+                {loca.DescriptionLocation}
+                """, parseMode: ParseMode.Html, linkPreviewOptions: true,
+                     replyMarkup: new ReplyKeyboardRemove());
+                break;
+            }
+        case "Рандом генератор":
+            {
+                await bot.SendMessage(callbackQuery.Message!.Chat, $"генерируем...");
+                GeneratorVibe vibe = await VibeGen();
+                await bot.SendMessage(callbackQuery.Message!.Chat, $"""
+                <b><u>{vibe.NameVibes}</u></b>:
+                
+                {vibe.TextVibes}
+                """, parseMode: ParseMode.Html, linkPreviewOptions: true,
+                     replyMarkup: new ReplyKeyboardRemove());
+                break;
+            }
+    }
+}
 async Task OnCallbackQuery(CallbackQuery callbackQuery)
 {
     await bot.AnswerCallbackQuery(callbackQuery.Id, $"You selected {callbackQuery.Data}");
-    await bot.SendMessage(callbackQuery.Message!.Chat, $"Received callback from inline button {callbackQuery.Data}");
+   
+}
+async Task<GeneratorLocation> LocationGen()
+{
+    Task<List<GeneratorLocation>> task = Task.Run(() => GetLocs());
+    List<GeneratorLocation> locs = task.Result;
+    int number = random.Next(0, locs.Count - 1);
+    GeneratorLocation loc_for_today = locs[number];
+    return loc_for_today;
+}
+async Task<GeneratorVibe> VibeGen()
+{
+    Task<List<GeneratorVibe>> task = Task.Run(() => GetVibes());
+    List<GeneratorVibe> vibes = task.Result;
+    int number = random.Next(0, vibes.Count - 1);
+    GeneratorVibe vibe_for_today = vibes[number];
+    return vibe_for_today;
 }
 async Task OnPollAnswer(PollAnswer pollAnswer)
 {

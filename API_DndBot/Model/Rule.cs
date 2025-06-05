@@ -14,4 +14,6 @@ public partial class Rule
     public string? Link { get; set; }
 
     public byte[]? Source { get; set; }
+
+    public string? DescriptionRule { get; set; }
 }

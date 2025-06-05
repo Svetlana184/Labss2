@@ -21,7 +21,8 @@ namespace API_DndBot.Controllers
                            e.IdRule,
                            e.NameRule,
                            e.TypeOfRule,
-                           e.Link
+                           e.Link,
+                           e.DescriptionRule
                        };
             return rules.AsQueryable();
         }

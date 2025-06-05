@@ -40,7 +40,7 @@ async Task<List<Rule>> GetRules()
     return rules!;
 }
 //var bot = new TelegramBotClient("", cancellationToken: cts.Token);
-var token = "7859735232:AAFROH90ZnkB79eBKrsn2BdPQGYHcUm3zHc";
+var token = "";
 using var cts = new CancellationTokenSource();
 var bot = new TelegramBotClient(token, cancellationToken: cts.Token);
 var me = await bot.GetMe();
@@ -183,12 +183,14 @@ async Task OnUpdate(Update update)
                         case "Выберите от кого будет игра:":
                             {
                                 filters[0] = callbackQuery.Data!;
+                                await OnCallbackQueryGame(callbackQuery);
                                 await OnCallbackQuery(callbackQuery);
                                 break;
                             }
                         case "Выберите длительность:":
                             {
                                 filters[1] = callbackQuery.Data!;
+                                await OnCallbackQueryGame(callbackQuery);
                                 await OnCallbackQuery(callbackQuery);
                                 break;
                             }
@@ -217,16 +219,18 @@ async Task OnUpdate(Update update)
 
 async Task OnCallbackQueryGame(CallbackQuery callbackQuery)
 {
-    List<Game> games = await GameGen();
-    if (games.Count == 0)
+    if (filters.All(x => x != null))
     {
-        await bot.SendMessage(callbackQuery.Message!.Chat, "Игр не найдено(((");
-    }
-    else
-    {
-        foreach (Game game in games)
+        List<Game> games = await GameGen();
+        if (games.Count == 0)
         {
-            await bot.SendMessage(callbackQuery.Message!.Chat, $"""
+            await bot.SendMessage(callbackQuery.Message!.Chat, "Игр не найдено(((");
+        }
+        else
+        {
+            foreach (Game game in games)
+            {
+                await bot.SendMessage(callbackQuery.Message!.Chat, $"""
                 <b><u>{game.NameGame}</u></b>:
                 
                 <u>{game.Source}</u>
@@ -245,9 +249,11 @@ async Task OnCallbackQueryGame(CallbackQuery callbackQuery)
 
                 {game.DescriptionGame}
                 """, parseMode: ParseMode.Html, linkPreviewOptions: true,
-                         replyMarkup: new ReplyKeyboardRemove());
+                             replyMarkup: new ReplyKeyboardRemove());
+            }
         }
     }
+    
 }
 
 async Task OnCallbackQueryRule(CallbackQuery callbackQuery)
@@ -331,7 +337,7 @@ async Task<List<Rule>> RuleGen(string filter)
 async Task<List<Game>> GameGen()
 {
     Task<List<Game>> task = Task.Run(() => GetGames());
-    List<Game> games = task.Result.Where(x => x.FromWho == filters[0] && x.Duration == filters[1] && x.Source == filters[2]).ToList();
+    List<Game> games = task.Result.Where(x => x.FromWho == filters[0] && x.Duration == filters[1] && x.Oficiality == filters[2]).ToList();
     return games;
 }
 

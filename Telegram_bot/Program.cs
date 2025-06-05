@@ -38,8 +38,8 @@ async Task<List<Rule>> GetRules()
     List<Rule>? rules = await client.GetFromJsonAsync<List<Rule>>("http://localhost:5254/Rules");
     return rules!;
 }
-//var bot = new TelegramBotClient("7859735232:AAFROH90ZnkB79eBKrsn2BdPQGYHcUm3zHc", cancellationToken: cts.Token);
-var token = "7859735232:AAFROH90ZnkB79eBKrsn2BdPQGYHcUm3zHc";
+//var bot = new TelegramBotClient("", cancellationToken: cts.Token);
+var token = "";
 using var cts = new CancellationTokenSource();
 var bot = new TelegramBotClient(token, cancellationToken: cts.Token);
 var me = await bot.GetMe();

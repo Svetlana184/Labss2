@@ -110,9 +110,18 @@ async Task OnCommand(string command, string args, Message msg)
                 replyMarkup: new ReplyKeyboardRemove());
             break;
         case "/rules":
+            Task<List<Rule>> taskRul = Task.Run(() => GetRules());
+            List<Rule> rules = taskRul.Result;
+            List<string> filter = (from e in rules select e.TypeOfRule).ToList();
+            SortedSet<string> types = new SortedSet<string>();
+            for (int i=0;  i<rules.Count; i++)
+            {
+                types.Add(filter[i] + "\n");
+            }
             await bot.SendMessage(msg.Chat, "читай книгу игрока, идиот");
             break;
         case "/games":
+           
             await bot.SendMessage(msg.Chat, "сам придумай");
             break;
         case "/generators":

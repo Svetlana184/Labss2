@@ -111,7 +111,7 @@ async Task OnCommand(string command, string args, Message msg)
                 replyMarkup: new ReplyKeyboardRemove());
             break;
         case "/rules":
-            await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
+            await bot.SendMessage(msg.Chat, "Выберите тип правил:", replyMarkup: new InlineKeyboardButton[][] {
                 ["Базовые правила"],
                 ["Бой"],
                 ["Полезности"]
@@ -183,7 +183,6 @@ async Task OnUpdate(Update update)
                             }
                         case "Выберите параметр игры:":
                             {
-                                await OnCallbackQueryRule(callbackQuery);
                                 await OnCallbackQuery(callbackQuery);
                                 break;
                             }
@@ -203,7 +202,6 @@ async Task OnUpdate(Update update)
     ;
 }
 
-async Task<string> OnCallbackQueryGame(CallbackQuery callbackQuery) => callbackQuery.Data!;
 async Task OnCallbackQueryRule(CallbackQuery callbackQuery)
 {
     List<Rule> rules = await RuleGen(callbackQuery.Data!);

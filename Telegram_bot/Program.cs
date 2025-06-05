@@ -111,15 +111,29 @@ async Task OnCommand(string command, string args, Message msg)
                 replyMarkup: new ReplyKeyboardRemove());
             break;
         case "/rules":
-            await bot.SendMessage(msg.Chat, "Выберите тип правил:", replyMarkup: new InlineKeyboardButton[][] {
+            await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
                 ["Базовые правила"],
                 ["Бой"],
                 ["Полезности"]
             });
             break;
         case "/games":
-           
-            await bot.SendMessage(msg.Chat, "сам придумай");
+            await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
+                ["Игры от бота"],
+                ["Игры от пользователей"],
+                ["Все"]
+            });
+            await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
+                ["Ваншот"],
+                ["2-3 партии"],
+                ["Модуль"],
+                ["Кампейн"],
+                ["Любая"]
+            });
+            await bot.SendMessage(msg.Chat, "Выберите параметр игры:", replyMarkup: new InlineKeyboardButton[][] {
+                ["Официальный сеттинг"],
+                ["Неофициальный сеттинг"]
+            });
             break;
         case "/generators":
             await bot.SendMessage(msg.Chat, "Выберите генератор:", replyMarkup: new InlineKeyboardButton[][] {
@@ -151,7 +165,6 @@ async Task OnUpdate(Update update)
     {
         case { CallbackQuery: { } callbackQuery }:
             {
-                var i = callbackQuery.Message.Text;
                 if(callbackQuery.Message!.Text != null)
                 {
                     switch (callbackQuery.Message.Text)
@@ -163,6 +176,12 @@ async Task OnUpdate(Update update)
                                 break;
                             }
                         case "Выберите тип правил:":
+                            {
+                                await OnCallbackQueryRule(callbackQuery);
+                                await OnCallbackQuery(callbackQuery);
+                                break;
+                            }
+                        case "Выберите параметр игры:":
                             {
                                 await OnCallbackQueryRule(callbackQuery);
                                 await OnCallbackQuery(callbackQuery);
@@ -183,6 +202,8 @@ async Task OnUpdate(Update update)
     }
     ;
 }
+
+async Task<string> OnCallbackQueryGame(CallbackQuery callbackQuery) => callbackQuery.Data!;
 async Task OnCallbackQueryRule(CallbackQuery callbackQuery)
 {
     List<Rule> rules = await RuleGen(callbackQuery.Data!);

@@ -134,8 +134,6 @@ async Task OnCommand(string command, string args, Message msg)
                 ["неофициальная"]
             });
             
-
-            Array.Clear(filters);
             break;
         case "/generators":
             await bot.SendMessage(msg.Chat, "Выберите генератор:", replyMarkup: new InlineKeyboardButton[][] {
@@ -338,6 +336,7 @@ async Task<List<Game>> GameGen()
 {
     Task<List<Game>> task = Task.Run(() => GetGames());
     List<Game> games = task.Result.Where(x => x.FromWho == filters[0] && x.Duration == filters[1] && x.Oficiality == filters[2]).ToList();
+    Array.Clear(filters);
     return games;
 }
 

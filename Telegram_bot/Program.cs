@@ -291,17 +291,19 @@ async Task OnCallbackQueryGen(CallbackQuery callbackQuery)
                 List<InputMediaPhoto> img = new List<InputMediaPhoto>();
                 foreach (LocationImage image in images)
                 {
-                    InputMediaPhoto mediaPhoto = ConvertBytesToInputMediaPhoto(image.Source, $"""
-                {loca.NameLocation}
-                
-                {loca.DescriptionLocation}
-                """);
+                    InputMediaPhoto mediaPhoto = ConvertBytesToInputMediaPhoto(image.Source, "***");
                     img.Add(mediaPhoto);
                 }
                 if(img.Count != 0)
                 {
                     await bot.SendMediaGroup(callbackQuery.Message!.Chat, img);
                 }
+                await bot.SendMessage(callbackQuery.Message!.Chat, $"""
+                <b><u>{loca.NameLocation}</u></b>:
+                
+                {loca.DescriptionLocation}
+                """, parseMode: ParseMode.Html, linkPreviewOptions: true,
+                     replyMarkup: new ReplyKeyboardRemove());
                 break;
             }
         case "Рандом генератор":

@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System.Linq;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -8,8 +6,10 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram_bot;
 using Telegram_bot.Model;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Game = Telegram_bot.Model.Game;
+using Telegram.Bot.Types;
+
+using System.IO;
 
 HttpClient client = new HttpClient();
 Random random = new Random();
@@ -291,22 +291,17 @@ async Task OnCallbackQueryGen(CallbackQuery callbackQuery)
                 List<InputMediaPhoto> img = new List<InputMediaPhoto>();
                 foreach (LocationImage image in images)
                 {
-                    //var image_file = new ByteArrayContent(image.Source);
-                    //image_file.Headers.Add($"Content-Disposition", $"attachment; filename={image.NameImage}");
-                    //var requestContent = new MultipartFormDataContent();
-                    //requestContent.Add(image_file, "photo", image.NameImage);
-                    var document = new InputMediaPhoto(image.Source.ToString()!);
-                    img.Add(document);
-                  
-
-                }
-                await bot.SendMediaGroup(callbackQuery.Message!.Chat, img);
-                await bot.SendMessage(callbackQuery.Message!.Chat, $"""
-                <b><u>{loca.NameLocation}</u></b>:
+                    InputMediaPhoto mediaPhoto = ConvertBytesToInputMediaPhoto(image.Source, $"""
+                {loca.NameLocation}
                 
                 {loca.DescriptionLocation}
-                """, parseMode: ParseMode.Html, linkPreviewOptions: true,
-                     replyMarkup: new ReplyKeyboardRemove());
+                """);
+                    img.Add(mediaPhoto);
+                }
+                if(img.Count != 0)
+                {
+                    await bot.SendMediaGroup(callbackQuery.Message!.Chat, img);
+                }
                 break;
             }
         case "Рандом генератор":
@@ -323,6 +318,15 @@ async Task OnCallbackQueryGen(CallbackQuery callbackQuery)
             }
     }
 }
+
+InputMediaPhoto ConvertBytesToInputMediaPhoto(byte[] imageBytes, string fileName)
+{
+    var stream = new MemoryStream(imageBytes);
+    var inputMediaPhoto = new InputMediaPhoto(stream);
+    inputMediaPhoto.Caption = fileName; // Задайте имя файла при необходимости
+    return inputMediaPhoto;
+}
+
 async Task OnCallbackQuery(CallbackQuery callbackQuery)
 {
     await bot.AnswerCallbackQuery(callbackQuery.Id, $"You selected {callbackQuery.Data}");

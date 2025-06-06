@@ -14,6 +14,12 @@ using Game = Telegram_bot.Model.Game;
 HttpClient client = new HttpClient();
 Random random = new Random();
 string[] filters = new string[3];
+
+async Task<List<LocationImage>> GetLocImages()
+{
+    List<LocationImage>? images = await client.GetFromJsonAsync<List<LocationImage>>("http://localhost:5254/LocationImages");
+    return images!;
+}
 async Task<List<Fact>> GetFacts()
 {
     List<Fact>? facts = await client.GetFromJsonAsync<List<Fact>>("http://localhost:5254/Facts");
@@ -281,6 +287,20 @@ async Task OnCallbackQueryGen(CallbackQuery callbackQuery)
             {
                 await bot.SendMessage(callbackQuery.Message!.Chat, $"генерируем локацию...");
                 GeneratorLocation loca = await LocationGen();
+                List<LocationImage> images = await LocationImagesGen(loca.IdLocation);
+                List<InputMediaPhoto> img = new List<InputMediaPhoto>();
+                foreach (LocationImage image in images)
+                {
+                    //var image_file = new ByteArrayContent(image.Source);
+                    //image_file.Headers.Add($"Content-Disposition", $"attachment; filename={image.NameImage}");
+                    //var requestContent = new MultipartFormDataContent();
+                    //requestContent.Add(image_file, "photo", image.NameImage);
+                    var document = new InputMediaPhoto(image.Source.ToString()!);
+                    img.Add(document);
+                  
+
+                }
+                await bot.SendMediaGroup(callbackQuery.Message!.Chat, img);
                 await bot.SendMessage(callbackQuery.Message!.Chat, $"""
                 <b><u>{loca.NameLocation}</u></b>:
                 
@@ -315,6 +335,13 @@ async Task<GeneratorLocation> LocationGen()
     int number = random.Next(0, locs.Count - 1);
     GeneratorLocation loc_for_today = locs[number];
     return loc_for_today;
+}
+async Task<List<LocationImage>> LocationImagesGen(int index)
+{
+    Task<List<LocationImage>> task = Task.Run(() => GetLocImages());
+    List<LocationImage> locationImages = task.Result.Where(x => x.IdLocation == index).ToList();
+
+    return locationImages;
 }
 async Task<GeneratorVibe> VibeGen()
 {

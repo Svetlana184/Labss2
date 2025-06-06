@@ -101,7 +101,7 @@ async Task OnCommand(string command, string args, Message msg)
                 /rules                    - изучите базовые правила днд
                 /games                 - выберите концепцию для игры
                 /generators         - сгенерируйте элемент игры
-                /help                     - узнайте о функциях бота
+                /help                     - узнайте о боте и его функциях
                 """, parseMode: ParseMode.Html, linkPreviewOptions: true,
                 replyMarkup: new ReplyKeyboardRemove());
             break;
@@ -149,12 +149,21 @@ async Task OnCommand(string command, string args, Message msg)
             break;
         case "/help":
             await bot.SendMessage(msg.Chat, """
-                <b><u>Bot menu</u></b>:
-                /fact_of_the_day - ознакомьтесь с фактом дня
-                /rules                    - изучите базовые правила днд
-                /games                 - выберите концепцию для игры
-                /generators         - сгенерируйте элемент игры
-                /help                     - узнайте о функциях бота
+                <b><u>SillyDndBot</u></b> поможет вам разобраться с механиками и внести что-то в свои игры
+
+                <b><u>Dungeons & Dragons (D&D)</u></b> - - это культовая настольная ролевая игра в жанре фэнтези. 
+                В ней группа игроков создаёт персонажей и, под руководством Мастера Подземелий (DM, ведущего), 
+                отправляется в приключения, решают задачи, взаимодействуют с игровым миром и сражаются с монстрами. 
+
+                <b><u>Функции бота</u></b>:
+                /fact_of_the_day
+                    <i>ознакомьтесь с фактом дня</i>
+                /rules
+                    <i>изучите основные правила днд, информацию о бое, ознакомьтесь с разными полезностями</i>
+                /games
+                    <i>выберите концепцию для игры</i>
+                /generators
+                    <i>сгенерируйте элемент игры: локацию или случайную вещь, которую можно будет внедрить в ваши игры</i>
                 """, parseMode: ParseMode.Html, linkPreviewOptions: true,
                 replyMarkup: new ReplyKeyboardRemove());
             break;
@@ -237,19 +246,14 @@ async Task OnCallbackQueryGame(CallbackQuery callbackQuery)
                 await bot.SendMessage(callbackQuery.Message!.Chat, $"""
                 <b><u>{game.NameGame}</u></b>:
                 
-                <u>{game.Source}</u>
-
-                <u>{game.Setting}</u>
-
-                <u>{game.Genre}</u>
-
-                <u>{game.Duration}</u>
-
-                <u>{game.FromWho}</u>
+                <i>{game.Source} * {game.Setting}</i>
+                <i>{game.Genre} * {game.Duration}</i>
 
                 ***
 
-                {game.Vibes}
+                <i>{game.Vibes}</i>
+
+                ***
 
                 {game.DescriptionGame}
                 """, parseMode: ParseMode.Html, linkPreviewOptions: true,
